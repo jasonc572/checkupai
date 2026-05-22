@@ -1,0 +1,824 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --teal:#0f6e56;--teal-light:#e1f5ee;--teal-mid:#1d9e75;--teal-dark:#085041;
+    --blue:#185fa5;--blue-light:#e6f1fb;--blue-mid:#378add;
+    --text:#1a1a2e;--text2:#5a6478;--text3:#8c95a8;
+    --bg:#f5f7fa;--card:#fff;--border:#e4e9f0;
+    --radius:14px;--radius-sm:9px;
+    --font:'Sora',sans-serif;--font2:'DM Sans',sans-serif;
+  }
+  body{font-family:var(--font2);background:var(--bg);color:var(--text);min-height:100vh}
+  @media(prefers-color-scheme:dark){
+    :root{--text:#e8edf5;--text2:#9ba8be;--text3:#616d82;--bg:#0e1117;--card:#161c27;--border:#232d3f;--teal-light:#04342c;--blue-light:#042c53}
+  }
+
+  /* LAYOUT */
+  .app{min-height:100vh;display:flex;flex-direction:column}
+  .topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+  .logo{font-family:var(--font);font-weight:600;font-size:17px;color:var(--teal);display:flex;align-items:center;gap:8px}
+  .logo i{font-size:22px}
+  .nav-pills{display:flex;gap:4px}
+  .nav-pill{padding:6px 14px;border-radius:20px;border:none;background:none;font-size:13px;font-family:var(--font2);cursor:pointer;color:var(--text2);transition:all .15s}
+  .nav-pill:hover{background:var(--teal-light);color:var(--teal)}
+  .nav-pill.active{background:var(--teal-light);color:var(--teal);font-weight:500}
+  .main{flex:1;padding:24px;max-width:960px;margin:0 auto;width:100%}
+
+  /* CARDS */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+  .card-sm{padding:16px}
+  .hero{text-align:center;padding:48px 24px 32px;background:linear-gradient(135deg,var(--teal-light) 0%,var(--blue-light) 100%);border-radius:var(--radius);margin-bottom:24px;border:1px solid var(--border)}
+  .hero h1{font-family:var(--font);font-size:28px;font-weight:600;color:var(--teal-dark);margin-bottom:10px}
+  .hero p{font-size:15px;color:var(--text2);max-width:480px;margin:0 auto 24px}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:9px;border:none;cursor:pointer;font-family:var(--font2);font-size:14px;font-weight:500;transition:all .15s}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-primary:hover{background:var(--teal-dark);transform:translateY(-1px)}
+  .btn-secondary{background:var(--card);color:var(--text);border:1px solid var(--border)}
+  .btn-secondary:hover{background:var(--bg);border-color:var(--teal)}
+  .btn-sm{padding:7px 14px;font-size:13px}
+  .btn-outline{background:transparent;border:1.5px solid var(--teal);color:var(--teal)}
+  .btn-outline:hover{background:var(--teal-light)}
+
+  /* FORM */
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px}
+  .form-group{display:flex;flex-direction:column;gap:6px}
+  .form-group label{font-size:13px;font-weight:500;color:var(--text2)}
+  .form-group input,.form-group select,.form-group textarea{
+    padding:9px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);
+    background:var(--bg);color:var(--text);font-family:var(--font2);font-size:14px;
+    transition:border-color .15s;outline:none
+  }
+  .form-group input:focus,.form-group select:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(29,158,117,.12)}
+  .form-group select option{background:var(--card)}
+  .check-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .check-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;border:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--text2);background:var(--bg);transition:all .15s;user-select:none}
+  .check-pill:hover{border-color:var(--teal);color:var(--teal)}
+  .check-pill.on{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark);font-weight:500}
+  .section-label{font-family:var(--font);font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .section-label i{color:var(--teal);font-size:18px}
+  .divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+  /* RESULTS */
+  .recs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:24px}
+  .rec-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:all .2s;cursor:default}
+  .rec-card:hover{transform:translateY(-2px);border-color:var(--teal);box-shadow:0 4px 16px rgba(15,110,86,.1)}
+  .rec-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;margin-bottom:10px}
+  .badge-high{background:#faece7;color:#993c1d}
+  .badge-annual{background:var(--teal-light);color:var(--teal-dark)}
+  .badge-periodic{background:var(--blue-light);color:#0c447c}
+  .rec-title{font-family:var(--font);font-weight:600;font-size:14px;color:var(--text);margin-bottom:6px}
+  .rec-desc{font-size:12px;color:var(--text2);line-height:1.5}
+  .rec-freq{font-size:11px;color:var(--teal);font-weight:500;margin-top:8px;display:flex;align-items:center;gap:4px}
+
+  /* PROVIDERS */
+  .provider-list{display:flex;flex-direction:column;gap:12px}
+  .provider-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;display:flex;gap:14px;align-items:flex-start;transition:all .15s}
+  .provider-card:hover{border-color:var(--blue-mid);box-shadow:0 2px 12px rgba(24,95,165,.08)}
+  .provider-icon{width:44px;height:44px;border-radius:10px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .provider-icon i{font-size:22px;color:var(--blue)}
+  .provider-body{flex:1;min-width:0}
+  .provider-name{font-family:var(--font);font-weight:600;font-size:14px;color:var(--text);margin-bottom:3px}
+  .provider-type{font-size:12px;color:var(--text3);margin-bottom:6px}
+  .provider-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--text2);align-items:center}
+  .meta-dot{width:6px;height:6px;border-radius:50%;background:#1d9e75;flex-shrink:0}
+  .meta-dot.closed{background:#d85a30}
+  .stars{color:#ef9f27;font-size:12px;letter-spacing:1px}
+  .provider-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0}
+
+  /* MAP PLACEHOLDER */
+  .map-box{background:var(--blue-light);border:1px solid var(--border);border-radius:var(--radius);height:220px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--text2);font-size:13px;margin-bottom:20px}
+  .map-box i{font-size:36px;color:var(--blue-mid);opacity:.6}
+
+  /* SCORE */
+  .score-ring{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:var(--font);margin:0 auto 12px}
+  .score-num{font-size:28px;font-weight:600;line-height:1}
+  .score-lbl{font-size:11px;color:var(--text3)}
+
+  /* CHAT */
+  .chat-window{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;height:340px}
+  .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+  .msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5}
+  .msg-ai{background:var(--card);border:1px solid var(--border);align-self:flex-start;color:var(--text);border-radius:4px 12px 12px 12px}
+  .msg-user{background:var(--teal);color:#fff;align-self:flex-end;border-radius:12px 4px 12px 12px}
+  .chat-input-row{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border);background:var(--card)}
+  .chat-input-row input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--font2);font-size:13px;outline:none}
+  .chat-input-row input:focus{border-color:var(--teal)}
+
+  /* TABS */
+  .tabs{display:flex;gap:2px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:3px;margin-bottom:20px}
+  .tab{flex:1;padding:8px 4px;border:none;background:none;border-radius:8px;font-family:var(--font2);font-size:13px;cursor:pointer;color:var(--text2);transition:all .15s;font-weight:400}
+  .tab.active{background:var(--card);color:var(--text);font-weight:500;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+
+  /* PROGRESS */
+  .progress-bar{background:var(--border);border-radius:4px;height:6px;overflow:hidden;margin-bottom:24px}
+  .progress-fill{background:linear-gradient(90deg,var(--teal-mid),var(--blue-mid));height:100%;border-radius:4px;transition:width .4s}
+  .step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .2s}
+  .dot.done{background:var(--teal)}
+  .dot.active{background:var(--teal);width:20px;border-radius:4px}
+
+  /* MISC */
+  .tag{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+  .tag-green{background:var(--teal-light);color:var(--teal-dark)}
+  .tag-blue{background:var(--blue-light);color:#0c447c}
+  .tag-amber{background:#faeeda;color:#633806}
+  .info-box{background:var(--teal-light);border:1px solid rgba(15,110,86,.2);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--teal-dark);display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+  .flex{display:flex}.gap-2{gap:8px}.gap-3{gap:12px}.items-center{align-items:center}.justify-between{justify-content:space-between}.flex-wrap{flex-wrap:wrap}
+  .mb-1{margin-bottom:8px}.mb-2{margin-bottom:16px}.mb-3{margin-bottom:24px}
+  .text-sm{font-size:13px}.text-xs{font-size:11px}.text-muted{color:var(--text2)}.font-semi{font-weight:600}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  h2{font-family:var(--font);font-size:20px;font-weight:600;margin-bottom:16px;color:var(--text)}
+  h3{font-family:var(--font);font-size:16px;font-weight:600;margin-bottom:10px;color:var(--text)}
+  .loading{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:14px;padding:24px 0}
+  .spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fade-in{animation:fadeIn .3s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  .health-score-wrap{background:linear-gradient(135deg,var(--teal-light),var(--blue-light));border-radius:var(--radius);padding:20px;text-align:center;border:1px solid var(--border)}
+  .filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+  .filter-btn{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--card);font-size:12px;color:var(--text2);cursor:pointer;transition:all .12s;font-family:var(--font2)}
+  .filter-btn:hover,.filter-btn.on{background:var(--teal-light);border-color:var(--teal);color:var(--teal-dark)}
+  .summary-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;text-align:center}
+  .stat-num{font-family:var(--font);font-size:26px;font-weight:600;color:var(--teal);display:block}
+  .stat-lbl{font-size:12px;color:var(--text3);margin-top:2px}
+  .history-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .history-row:last-child{border-bottom:none}
+</style>
+
+<h2 class="sr-only">HealthCheck Finder — personalized health screening recommendations and nearby provider search</h2>
+
+<div class="app" id="app">
+  <div class="topbar">
+    <div class="logo">
+      <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>
+      HealthCheck Finder
+    </div>
+    <div class="nav-pills" id="nav"></div>
+  </div>
+  <div class="main" id="main-content"></div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const state = {
+  page: 'home',
+  step: 0,
+  profile: {},
+  recs: [],
+  providers: [],
+  chatHistory: [
+    {role:'ai', text:'Hi! I\'m your health assistant. Ask me about any recommended screenings, what to expect at a check-up, or how to prepare. How can I help?'}
+  ],
+  filters: {openNow: false, highRated: false, sortDist: true},
+  activeTab: 'recs',
+  historyData: [
+    {date:'Mar 15, 2025', age:38, checks:6, score:74},
+    {date:'Sep 2, 2024', age:37, checks:5, score:68},
+  ]
+};
+
+const PAGES = [
+  {id:'home', label:'Home', icon:'ti-home'},
+  {id:'assess', label:'Assessment', icon:'ti-clipboard-heart'},
+  {id:'results', label:'My Results', icon:'ti-chart-bar'},
+  {id:'providers', label:'Find Providers', icon:'ti-map-pin'},
+  {id:'chat', label:'AI Assistant', icon:'ti-message-chatbot'},
+  {id:'history', label:'History', icon:'ti-history'},
+];
+
+function navigate(page) {
+  state.page = page;
+  if (page === 'assess') { state.step = 0; }
+  render();
+}
+
+function render() {
+  renderNav();
+  const c = $('main-content');
+  c.className = 'main fade-in';
+  switch(state.page) {
+    case 'home': c.innerHTML = renderHome(); break;
+    case 'assess': c.innerHTML = renderAssess(); break;
+    case 'results': c.innerHTML = renderResults(); break;
+    case 'providers': c.innerHTML = renderProviders(); break;
+    case 'chat': c.innerHTML = renderChat(); setTimeout(bindChat, 10); break;
+    case 'history': c.innerHTML = renderHistory(); break;
+  }
+  bindEvents();
+}
+
+function renderNav() {
+  $('nav').innerHTML = PAGES.map(p =>
+    `<button class="nav-pill ${state.page===p.id?'active':''}" onclick="navigate('${p.id}')">
+      <i class="ti ${p.icon}" aria-hidden="true"></i> ${p.label}
+    </button>`
+  ).join('');
+}
+
+function renderHome() {
+  const score = state.recs.length ? calcScore() : null;
+  return `
+  <div class="hero">
+    <h1>Your Personalized Health Check-Up Guide</h1>
+    <p>Based on your age, gender, and health history, we recommend the right screenings at the right time — then help you find nearby providers to get them done.</p>
+    <div class="flex gap-2" style="justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="navigate('assess')"><i class="ti ti-clipboard-heart"></i> Start Assessment</button>
+      <button class="btn btn-secondary" onclick="navigate('providers')"><i class="ti ti-map-pin"></i> Find Providers</button>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:24px">
+    ${[
+      {icon:'ti-shield-check',label:'Evidence-Based',desc:'Based on USPSTF guidelines'},
+      {icon:'ti-map-search',label:'Location-Aware',desc:'Finds nearby clinics & labs'},
+      {icon:'ti-robot',label:'AI-Assisted',desc:'Personalized health chat'},
+      {icon:'ti-file-export',label:'PDF Export',desc:'Download your care plan'},
+    ].map(f=>`
+    <div class="card card-sm" style="text-align:center">
+      <i class="ti ${f.icon}" style="font-size:26px;color:var(--teal);margin-bottom:8px" aria-hidden="true"></i>
+      <div style="font-family:var(--font);font-weight:600;font-size:13px;margin-bottom:4px">${f.label}</div>
+      <div class="text-xs text-muted">${f.desc}</div>
+    </div>`).join('')}
+  </div>
+
+  ${score ? `
+  <div class="card mb-3">
+    <h3><i class="ti ti-activity" style="color:var(--teal)"></i> Your Health Summary</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px">
+      <div class="summary-stat"><span class="stat-num">${state.recs.length}</span><div class="stat-lbl">Recommended Checks</div></div>
+      <div class="summary-stat"><span class="stat-num">${state.recs.filter(r=>r.priority==='high').length}</span><div class="stat-lbl">High Priority</div></div>
+      <div class="summary-stat"><span class="stat-num">${score}</span><div class="stat-lbl">Health Score</div></div>
+      <div class="summary-stat"><span class="stat-num">${state.providers.length||8}</span><div class="stat-lbl">Nearby Providers</div></div>
+    </div>
+  </div>` : `
+  <div class="card" style="text-align:center;padding:32px">
+    <i class="ti ti-clipboard-text" style="font-size:40px;color:var(--teal-mid);opacity:.5;margin-bottom:12px"></i>
+    <div style="font-size:15px;font-weight:500;margin-bottom:6px">No assessment yet</div>
+    <div class="text-sm text-muted mb-2">Complete a quick health profile to get your personalized screening plan</div>
+    <button class="btn btn-primary btn-sm" onclick="navigate('assess')">Take Assessment →</button>
+  </div>`}
+
+  <div class="card">
+    <h3>Featured Screening Guidelines</h3>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      ${[
+        {age:'18–39',checks:'Blood pressure, dental, vision, STI screening'},
+        {age:'40–49',checks:'Cholesterol, diabetes, lung cancer (if smoker), skin check'},
+        {age:'50–64',checks:'Colonoscopy, mammogram, PSA, shingles vaccine'},
+        {age:'65+',checks:'Bone density, AAA screening, cognitive assessment, pneumonia vaccine'},
+      ].map(g=>`<div class="flex justify-between items-center" style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <span class="tag tag-green">${g.age}</span>
+        <span class="text-sm text-muted" style="flex:1;padding-left:12px">${g.checks}</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+const CONDITIONS = ['Hypertension','Diabetes','High Cholesterol','Heart Disease','Asthma','Depression/Anxiety','Thyroid Issues','Obesity'];
+const HISTORY_FLAGS = ['Breast Cancer','Colon Cancer','Heart Disease','Diabetes','Stroke'];
+
+function renderAssess() {
+  const steps = ['Personal Info','Health Profile','Risk Factors','Location'];
+  const pct = Math.round((state.step/3)*100);
+  if (state.step === 4) return renderAssessComplete();
+  return `
+  <h2><i class="ti ti-clipboard-heart" style="color:var(--teal)"></i> Health Assessment</h2>
+  <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+  <div class="step-dots">${steps.map((_,i)=>`<div class="dot ${i<state.step?'done':i===state.step?'active':''}"></div>`).join('')}</div>
+  <div style="font-size:12px;color:var(--text3);text-align:center;margin-bottom:20px">Step ${state.step+1} of 4 — ${steps[state.step]}</div>
+
+  ${state.step===0?`
+  <div class="card">
+    <div class="section-label"><i class="ti ti-user"></i> Personal Information</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Age *</label>
+        <input type="number" id="f-age" min="18" max="100" value="${state.profile.age||''}" placeholder="e.g. 42">
+      </div>
+      <div class="form-group">
+        <label>Biological Sex *</label>
+        <select id="f-sex">
+          <option value="">Select…</option>
+          <option value="male" ${state.profile.sex==='male'?'selected':''}>Male</option>
+          <option value="female" ${state.profile.sex==='female'?'selected':''}>Female</option>
+          <option value="other" ${state.profile.sex==='other'?'selected':''}>Other/Intersex</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Height (cm)</label>
+        <input type="number" id="f-height" value="${state.profile.height||''}" placeholder="e.g. 170">
+      </div>
+      <div class="form-group">
+        <label>Weight (kg)</label>
+        <input type="number" id="f-weight" value="${state.profile.weight||''}" placeholder="e.g. 72">
+      </div>
+    </div>
+    <div class="flex justify-between">
+      <span></span>
+      <button class="btn btn-primary" onclick="nextStep(0)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>` : ''}
+
+  ${state.step===1?`
+  <div class="card">
+    <div class="section-label"><i class="ti ti-heart-rate-monitor"></i> Health Profile</div>
+    <div class="form-group mb-2">
+      <label>Existing Conditions</label>
+      <div class="check-group" id="cond-group">
+        ${CONDITIONS.map(c=>`<label class="check-pill ${(state.profile.conditions||[]).includes(c)?'on':''}" data-val="${c}" data-group="conditions">${c}</label>`).join('')}
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Smoking Status</label>
+        <select id="f-smoke">
+          <option value="never" ${state.profile.smoke==='never'?'selected':''}>Never smoked</option>
+          <option value="former" ${state.profile.smoke==='former'?'selected':''}>Former smoker</option>
+          <option value="current" ${state.profile.smoke==='current'?'selected':''}>Current smoker</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Alcohol Use</label>
+        <select id="f-alcohol">
+          <option value="none" ${state.profile.alcohol==='none'?'selected':''}>None</option>
+          <option value="light" ${state.profile.alcohol==='light'?'selected':''}>Light (1–2/week)</option>
+          <option value="moderate" ${state.profile.alcohol==='moderate'?'selected':''}>Moderate (3–7/week)</option>
+          <option value="heavy" ${state.profile.alcohol==='heavy'?'selected':''}>Heavy (7+/week)</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex justify-between">
+      <button class="btn btn-secondary btn-sm" onclick="prevStep()"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn btn-primary" onclick="nextStep(1)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>` : ''}
+
+  ${state.step===2?`
+  <div class="card">
+    <div class="section-label"><i class="ti ti-dna"></i> Risk Factors</div>
+    <div class="form-group mb-2">
+      <label>Family History (check all that apply)</label>
+      <div class="check-group" id="hist-group">
+        ${HISTORY_FLAGS.map(h=>`<label class="check-pill ${(state.profile.familyHistory||[]).includes(h)?'on':''}" data-val="${h}" data-group="familyHistory">${h}</label>`).join('')}
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Exercise Level</label>
+        <select id="f-exercise">
+          <option value="none">Sedentary</option>
+          <option value="light" ${state.profile.exercise==='light'?'selected':''}>Light (1–2 days/wk)</option>
+          <option value="moderate" ${state.profile.exercise==='moderate'?'selected':''}>Moderate (3–4 days/wk)</option>
+          <option value="active" ${state.profile.exercise==='active'?'selected':''}>Active (5+ days/wk)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Last Physical Exam</label>
+        <select id="f-lastexam">
+          <option value="never">Never</option>
+          <option value="recent" ${state.profile.lastExam==='recent'?'selected':''}>Within 1 year</option>
+          <option value="1-2yr" ${state.profile.lastExam==='1-2yr'?'selected':''}>1–2 years ago</option>
+          <option value="2plus" ${state.profile.lastExam==='2plus'?'selected':''}>2+ years ago</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex justify-between">
+      <button class="btn btn-secondary btn-sm" onclick="prevStep()"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn btn-primary" onclick="nextStep(2)">Next <i class="ti ti-arrow-right"></i></button>
+    </div>
+  </div>` : ''}
+
+  ${state.step===3?`
+  <div class="card">
+    <div class="section-label"><i class="ti ti-map-pin"></i> Your Location</div>
+    <div class="info-box"><i class="ti ti-info-circle" aria-hidden="true"></i> Your location is used only to find nearby providers. It is never stored or shared.</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" id="f-city" value="${state.profile.city||'New York'}" placeholder="e.g. Boston">
+      </div>
+      <div class="form-group">
+        <label>ZIP Code</label>
+        <input type="text" id="f-zip" value="${state.profile.zip||'10001'}" placeholder="e.g. 10001">
+      </div>
+    </div>
+    <div class="mb-2">
+      <button class="btn btn-secondary btn-sm" onclick="useGPS()"><i class="ti ti-current-location"></i> Use My GPS Location</button>
+      ${state.profile.gpsUsed?'<span class="tag tag-green" style="margin-left:8px">📍 GPS location captured</span>':''}
+    </div>
+    <div class="flex justify-between">
+      <button class="btn btn-secondary btn-sm" onclick="prevStep()"><i class="ti ti-arrow-left"></i> Back</button>
+      <button class="btn btn-primary" onclick="nextStep(3)"><i class="ti ti-sparkles"></i> Generate My Plan</button>
+    </div>
+  </div>` : ''}`;
+}
+
+function renderAssessComplete() {
+  return `<div class="card" style="text-align:center;padding:40px 24px">
+    <i class="ti ti-circle-check-filled" style="font-size:52px;color:var(--teal);margin-bottom:16px"></i>
+    <h2 style="margin-bottom:8px">Assessment Complete!</h2>
+    <p class="text-sm text-muted mb-3">Your personalized screening plan is ready. We found <strong>${state.recs.length}</strong> recommended check-ups based on your profile.</p>
+    <div class="flex gap-2" style="justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="navigate('results')"><i class="ti ti-chart-bar"></i> View My Results</button>
+      <button class="btn btn-secondary" onclick="navigate('providers')"><i class="ti ti-map-pin"></i> Find Providers</button>
+    </div>
+  </div>`;
+}
+
+function renderResults() {
+  if (!state.recs.length) return `<div class="card" style="text-align:center;padding:32px">
+    <i class="ti ti-clipboard-text" style="font-size:40px;color:var(--text3);margin-bottom:12px"></i>
+    <p class="text-sm text-muted mb-2">Complete an assessment to see your recommendations.</p>
+    <button class="btn btn-primary btn-sm" onclick="navigate('assess')">Start Assessment</button>
+  </div>`;
+
+  const score = calcScore();
+  const scoreColor = score >= 70 ? '#1d9e75' : score >= 50 ? '#ba7517' : '#d85a30';
+  return `
+  <h2><i class="ti ti-chart-bar" style="color:var(--teal)"></i> Your Results Dashboard</h2>
+  <div class="tabs">
+    <button class="tab ${state.activeTab==='recs'?'active':''}" onclick="setTab('recs')">Recommendations</button>
+    <button class="tab ${state.activeTab==='score'?'active':''}" onclick="setTab('score')">Health Score</button>
+    <button class="tab ${state.activeTab==='export'?'active':''}" onclick="setTab('export')">Export & Share</button>
+  </div>
+
+  ${state.activeTab==='recs'?`
+  <div class="info-box mb-2"><i class="ti ti-stethoscope"></i> Based on USPSTF, CDC, and ACS guidelines for age ${state.profile.age||'--'}, ${state.profile.sex||'unknown sex'}.</div>
+  <div class="recs-grid">
+    ${state.recs.map(r=>`
+    <div class="rec-card">
+      <div class="rec-badge ${r.priority==='high'?'badge-high':r.freq==='Annual'?'badge-annual':'badge-periodic'}">
+        <i class="ti ${r.priority==='high'?'ti-alert-triangle':'ti-clock'}" aria-hidden="true"></i>
+        ${r.priority==='high'?'High Priority':r.freq}
+      </div>
+      <div class="rec-title">${r.name}</div>
+      <div class="rec-desc">${r.desc}</div>
+      <div class="rec-freq"><i class="ti ti-refresh" aria-hidden="true"></i>${r.freq}</div>
+    </div>`).join('')}
+  </div>` : ''}
+
+  ${state.activeTab==='score'?`
+  <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px">
+    <div class="health-score-wrap">
+      <div class="score-ring" style="border:6px solid ${scoreColor}">
+        <span class="score-num" style="color:${scoreColor}">${score}</span>
+        <span class="score-lbl">/ 100</span>
+      </div>
+      <div style="font-family:var(--font);font-weight:600;font-size:14px">${score>=70?'Good Health Profile':score>=50?'Moderate Risk':'Needs Attention'}</div>
+      <div class="text-xs text-muted" style="margin-top:4px">Based on ${state.recs.length} factors</div>
+    </div>
+    <div class="card card-sm">
+      <h3>Score Breakdown</h3>
+      ${[
+        {label:'Age & BMI',val:Math.min(100,Math.max(40,100-(state.profile.age||40)/2)),color:'#1d9e75'},
+        {label:'Existing Conditions',val:Math.max(20,100-((state.profile.conditions||[]).length*15)),color:'#378add'},
+        {label:'Lifestyle Factors',val:state.profile.smoke==='never'?85:state.profile.smoke==='former'?65:45,color:'#ef9f27'},
+        {label:'Screening Urgency',val:state.profile.lastExam==='recent'?90:state.profile.lastExam==='1-2yr'?70:50,color:'#d85a30'},
+      ].map(b=>`<div style="margin-bottom:12px">
+        <div class="flex justify-between mb-1"><span class="text-sm">${b.label}</span><span class="text-sm font-semi">${Math.round(b.val)}</span></div>
+        <div class="progress-bar" style="margin-bottom:0"><div style="height:100%;width:${b.val}%;background:${b.color};border-radius:4px"></div></div>
+      </div>`).join('')}
+    </div>
+  </div>` : ''}
+
+  ${state.activeTab==='export'?`
+  <div class="card" style="text-align:center;padding:32px">
+    <i class="ti ti-file-export" style="font-size:40px;color:var(--teal-mid);margin-bottom:12px"></i>
+    <h3 style="margin-bottom:8px">Export Your Health Plan</h3>
+    <p class="text-sm text-muted mb-3">Download a PDF summary to share with your doctor or keep for your records.</p>
+    <div class="flex gap-2" style="justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="exportPDF()"><i class="ti ti-pdf"></i> Download PDF</button>
+      <button class="btn btn-secondary" onclick="shareEmail()"><i class="ti ti-mail"></i> Email to Doctor</button>
+      <button class="btn btn-secondary" onclick="copyLink()"><i class="ti ti-link"></i> Copy Shareable Link</button>
+    </div>
+    <p class="text-xs text-muted" style="margin-top:16px">In a full deployment, this integrates with Apple Health, Google Fit, and your EHR.</p>
+  </div>` : ''}`;
+}
+
+function renderProviders() {
+  const mockProviders = getMockProviders();
+  return `
+  <h2><i class="ti ti-map-pin" style="color:var(--blue)"></i> Find Nearby Providers</h2>
+
+  <div class="map-box">
+    <i class="ti ti-map-2" aria-hidden="true"></i>
+    <div style="font-weight:500">Interactive Map</div>
+    <div class="text-xs">Google Maps / Mapbox integration — connect API key in settings</div>
+    <button class="btn btn-sm btn-outline" style="margin-top:8px" onclick="alert('In production: opens Google Maps with provider pins for your location.')">
+      <i class="ti ti-external-link"></i> Open in Maps
+    </button>
+  </div>
+
+  <div class="filter-bar">
+    <span class="text-sm text-muted">Filter:</span>
+    <button class="filter-btn ${state.filters.openNow?'on':''}" onclick="toggleFilter('openNow')">Open Now</button>
+    <button class="filter-btn ${state.filters.highRated?'on':''}" onclick="toggleFilter('highRated')">4.5+ Stars</button>
+    <button class="filter-btn ${state.filters.sortDist?'on':''}" onclick="toggleFilter('sortDist')">Closest First</button>
+    <button class="filter-btn" onclick="toggleFilter('telehealth')">Telehealth Available</button>
+  </div>
+
+  <div class="provider-list">
+    ${mockProviders.map(p=>`
+    <div class="provider-card">
+      <div class="provider-icon">
+        <i class="ti ${p.icon}" aria-hidden="true"></i>
+      </div>
+      <div class="provider-body">
+        <div class="provider-name">${p.name}</div>
+        <div class="provider-type">${p.type}</div>
+        <div class="provider-meta">
+          <div class="meta-dot ${p.open?'':'closed'}"></div>
+          <span>${p.open?'Open now':'Closed'} · ${p.hours}</span>
+          <span>·</span>
+          <span class="stars">${'★'.repeat(Math.floor(p.rating))}</span>
+          <span>${p.rating} (${p.reviews})</span>
+          <span>·</span>
+          <span><i class="ti ti-map-pin" style="font-size:11px"></i> ${p.dist} mi</span>
+        </div>
+        <div class="text-xs text-muted" style="margin-top:6px">${p.address} · ${p.phone}</div>
+        <div class="flex gap-2" style="margin-top:6px;flex-wrap:wrap">
+          ${p.services.map(s=>`<span class="tag tag-blue">${s}</span>`).join('')}
+          ${p.telehealth?`<span class="tag tag-green">Telehealth</span>`:''}
+        </div>
+      </div>
+      <div class="provider-actions">
+        <button class="btn btn-primary btn-sm" onclick="bookProvider('${p.name}')"><i class="ti ti-calendar-plus"></i> Book</button>
+        <button class="btn btn-secondary btn-sm" onclick="getDirections('${p.name}')"><i class="ti ti-route"></i> Directions</button>
+        ${p.website?`<a href="${p.website}" class="btn btn-secondary btn-sm" target="_blank"><i class="ti ti-world"></i> Website</a>`:''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderChat() {
+  return `
+  <h2><i class="ti ti-message-chatbot" style="color:var(--teal)"></i> AI Health Assistant</h2>
+  <div class="info-box"><i class="ti ti-info-circle"></i> This AI assistant provides general health information only. Always consult a licensed healthcare provider for medical advice.</div>
+  <div class="chat-window">
+    <div class="chat-messages" id="chat-msgs">
+      ${state.chatHistory.map(m=>`<div class="msg ${m.role==='ai'?'msg-ai':'msg-user'}">${m.text}</div>`).join('')}
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chat-in" placeholder="Ask about screenings, what to expect, how to prepare…" />
+      <button class="btn btn-primary btn-sm" id="chat-send"><i class="ti ti-send"></i> Send</button>
+    </div>
+  </div>
+  <div style="margin-top:12px">
+    <div class="text-xs text-muted mb-1">Suggested questions:</div>
+    <div class="flex gap-2 flex-wrap">
+      ${['What is a colonoscopy?','How do I prepare for blood work?','What is a normal blood pressure?','Do I need a mammogram?'].map(q=>
+        `<button class="filter-btn" onclick="sendSuggestedQ('${q}')">${q}</button>`
+      ).join('')}
+    </div>
+  </div>`;
+}
+
+function renderHistory() {
+  return `
+  <h2><i class="ti ti-history" style="color:var(--teal)"></i> Assessment History</h2>
+  <div class="card mb-3">
+    <h3>Past Assessments</h3>
+    ${state.historyData.map(h=>`
+    <div class="history-row">
+      <div>
+        <div style="font-weight:500;font-size:14px">${h.date}</div>
+        <div class="text-xs text-muted">Age ${h.age} · ${h.checks} recommended checks</div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <div style="background:var(--teal-light);color:var(--teal-dark);font-weight:600;font-size:13px;padding:4px 10px;border-radius:20px">Score: ${h.score}</div>
+        <button class="btn btn-secondary btn-sm"><i class="ti ti-eye"></i> View</button>
+      </div>
+    </div>`).join('')}
+    ${state.recs.length ? `
+    <div class="history-row">
+      <div>
+        <div style="font-weight:500;font-size:14px">Today — Current</div>
+        <div class="text-xs text-muted">Age ${state.profile.age||'--'} · ${state.recs.length} recommended checks</div>
+      </div>
+      <div class="flex gap-2 items-center">
+        <div style="background:var(--teal-light);color:var(--teal-dark);font-weight:600;font-size:13px;padding:4px 10px;border-radius:20px">Score: ${calcScore()}</div>
+        <button class="btn btn-primary btn-sm" onclick="navigate('results')"><i class="ti ti-eye"></i> View</button>
+      </div>
+    </div>` : ''}
+  </div>
+  <div class="card">
+    <h3>Trend Overview</h3>
+    <div style="position:relative;width:100%;height:180px">
+      <canvas id="trend-chart" role="img" aria-label="Health score trend: improving from 68 in 2024 to 74 in 2025">Health score trend over time.</canvas>
+    </div>
+  </div>`;
+}
+
+/* ---- LOGIC ---- */
+function generateRecommendations(p) {
+  const age = parseInt(p.age) || 30;
+  const sex = p.sex || 'other';
+  const conds = p.conditions || [];
+  const recs = [];
+
+  recs.push({name:'Annual Physical Exam',desc:'Comprehensive review with your primary care physician.',freq:'Annual',priority:'high'});
+  recs.push({name:'Blood Pressure Screening',desc:'Quick and painless check — key for cardiovascular health.',freq:'Every 1–2 years',priority: age>=40||conds.includes('Hypertension')?'high':'normal'});
+  recs.push({name:'Dental Check-up',desc:'Teeth cleaning and oral cancer screening.',freq:'Every 6 months',priority:'normal'});
+  recs.push({name:'Eye Exam',desc:'Vision check and screening for glaucoma and macular degeneration.',freq:'Every 2 years',priority:'normal'});
+
+  if (age >= 35 || conds.includes('High Cholesterol') || conds.includes('Heart Disease')) {
+    recs.push({name:'Cholesterol (Lipid Panel)',desc:'Blood test measuring LDL, HDL, and triglycerides.',freq:'Every 4–6 years (more if high risk)',priority:conds.includes('Heart Disease')?'high':'normal'});
+  }
+  if (age >= 35 || conds.includes('Diabetes') || p.weight > 85) {
+    recs.push({name:'Diabetes Screening (HbA1c)',desc:'Blood test measuring average glucose over 3 months.',freq:'Every 3 years (annual if diabetic)',priority:conds.includes('Diabetes')?'high':'normal'});
+  }
+  if (age >= 50 || conds.includes('Colon Cancer') || (p.familyHistory||[]).includes('Colon Cancer')) {
+    recs.push({name:'Colorectal Cancer Screening',desc:'Colonoscopy or stool-based test to detect polyps early.',freq:'Every 10 years (colonoscopy) or annual FIT',priority:'high'});
+  }
+  if (sex === 'female' && age >= 40) {
+    recs.push({name:'Mammogram',desc:'X-ray imaging to detect breast cancer early.',freq:'Annual (ages 40–74)',priority:'high'});
+  }
+  if (sex === 'female' && age >= 21 && age <= 65) {
+    recs.push({name:'Cervical Cancer Screening (Pap/HPV)',desc:'Pap smear and/or HPV test.',freq:'Every 3–5 years',priority:age<30?'normal':'high'});
+  }
+  if (sex === 'male' && age >= 50) {
+    recs.push({name:'Prostate Cancer Screening (PSA)',desc:'Blood test + discussion with doctor about risk vs benefit.',freq:'Discuss annually from age 50',priority:'normal'});
+  }
+  if (age >= 50) {
+    recs.push({name:'Bone Density Scan (DEXA)',desc:'Screening for osteoporosis, especially post-menopause.',freq:'Every 2–5 years based on risk',priority:sex==='female'?'high':'normal'});
+  }
+  if (p.smoke === 'current' || (p.smoke === 'former' && age >= 50)) {
+    recs.push({name:'Lung Cancer Screening (LDCT)',desc:'Low-dose CT scan for long-term smokers aged 50–80.',freq:'Annual (for current/former heavy smokers)',priority:'high'});
+  }
+  if (age >= 18) {
+    recs.push({name:'STI / HIV Screening',desc:'Recommended for all sexually active adults.',freq:'Annual',priority:'normal'});
+  }
+  recs.push({name:'Skin Cancer Screening',desc:'Dermatologist exam to check moles and skin lesions.',freq:'Annual',priority:age>=40?'high':'normal'});
+  recs.push({name:'Vaccination Review',desc:'Ensure flu, COVID, Tdap, shingles (50+), pneumococcal (65+) are current.',freq:'Annual flu + periodic boosters',priority:'normal'});
+
+  return recs;
+}
+
+function calcScore() {
+  const age = parseInt(state.profile.age)||30;
+  const conds = (state.profile.conditions||[]).length;
+  const smoke = state.profile.smoke==='never'?0:state.profile.smoke==='former'?10:20;
+  const alcohol = state.profile.alcohol==='heavy'?10:state.profile.alcohol==='moderate'?5:0;
+  const bmi = state.profile.height && state.profile.weight ? state.profile.weight/((state.profile.height/100)**2) : 22;
+  const bmiPenalty = bmi > 30 ? 10 : bmi > 25 ? 5 : 0;
+  const base = 85 - (age>60?10:age>40?5:0) - conds*8 - smoke - alcohol - bmiPenalty;
+  return Math.max(20, Math.min(99, Math.round(base)));
+}
+
+function getMockProviders() {
+  return [
+    {name:'Mount Sinai Health System',type:'Major Hospital & Screening Center',icon:'ti-building-hospital',open:true,hours:'24/7',rating:4.7,reviews:'2.1k',dist:'0.4',address:'One Gustave L. Levy Place, NY 10029',phone:'(212) 241-6500',website:'https://www.mountsinai.org',services:['Primary Care','Imaging','Lab'],telehealth:true},
+    {name:'CityMD Urgent Care – Midtown',type:'Urgent Care Clinic',icon:'ti-stethoscope',open:true,hours:'8am–11pm',rating:4.4,reviews:'834',dist:'0.7',address:'56 W 45th St, New York, NY 10036',phone:'(212) 555-0182',website:null,services:['Blood Work','STI Screening'],telehealth:false},
+    {name:'LabCorp Patient Service Center',type:'Diagnostic Laboratory',icon:'ti-flask',open:false,hours:'Opens 7am',rating:4.2,reviews:'412',dist:'1.1',address:'845 Third Ave, New York, NY 10022',phone:'(212) 555-0143',website:'https://www.labcorp.com',services:['Blood Panel','HbA1c','Lipid Panel','PSA'],telehealth:false},
+    {name:'NYU Langone Radiology',type:'Imaging & Radiology Center',icon:'ti-scan',open:true,hours:'7am–8pm',rating:4.6,reviews:'576',dist:'1.4',address:'240 E 38th St, New York, NY 10016',phone:'(212) 263-6400',website:'https://nyulangone.org',services:['Mammogram','DEXA','LDCT','Colonoscopy'],telehealth:false},
+    {name:'Northwell Health GoHealth',type:'Primary Care & Urgent Care',icon:'ti-heart-rate-monitor',open:true,hours:'8am–9pm',rating:4.5,reviews:'1.2k',dist:'1.8',address:'635 Madison Ave, New York, NY 10022',phone:'(516) 600-6000',website:null,services:['Annual Physical','Vaccines'],telehealth:true},
+  ];
+}
+
+/* ---- EVENTS ---- */
+function bindEvents() {
+  document.querySelectorAll('.check-pill[data-group]').forEach(el => {
+    el.addEventListener('click', () => {
+      const grp = el.dataset.group, val = el.dataset.val;
+      if (!state.profile[grp]) state.profile[grp] = [];
+      const idx = state.profile[grp].indexOf(val);
+      if (idx === -1) state.profile[grp].push(val);
+      else state.profile[grp].splice(idx, 1);
+      el.classList.toggle('on');
+    });
+  });
+  if (state.page === 'history') {
+    setTimeout(renderTrendChart, 50);
+  }
+}
+
+function bindChat() {
+  const inp = $('chat-in');
+  const btn = $('chat-send');
+  if (!inp || !btn) return;
+  const msgs = $('chat-msgs');
+  if (msgs) msgs.scrollTop = msgs.scrollHeight;
+
+  const send = async () => {
+    const txt = inp.value.trim();
+    if (!txt) return;
+    inp.value = '';
+    state.chatHistory.push({role:'user', text:txt});
+    const loadingId = 'loading-' + Date.now();
+    msgs.innerHTML += `<div class="msg msg-user">${txt}</div><div class="msg msg-ai loading" id="${loadingId}"><div class="spinner"></div> Thinking…</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+
+    try {
+      const profileSummary = state.recs.length ? `User profile: age ${state.profile.age}, sex ${state.profile.sex}, conditions: ${(state.profile.conditions||[]).join(', ')||'none'}. Recommended screenings: ${state.recs.map(r=>r.name).join(', ')}.` : '';
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:1000,
+          system:`You are a warm, knowledgeable health information assistant for HealthCheck Finder app. You help users understand preventive health screenings and check-ups. Always be clear that you provide general health information, not medical advice, and recommend consulting a licensed healthcare provider. Keep answers concise (2–4 sentences). ${profileSummary}`,
+          messages: state.chatHistory.filter(m=>m.role!=='loading').map(m=>({role:m.role==='ai'?'assistant':'user',content:m.text}))
+        })
+      });
+      const data = await res.json();
+      const reply = data.content?.map(b=>b.text||'').join('') || 'I couldn\'t process that. Please try again.';
+      state.chatHistory.push({role:'ai', text:reply});
+      const loadEl = $(loadingId);
+      if (loadEl) loadEl.outerHTML = `<div class="msg msg-ai">${reply}</div>`;
+      msgs.scrollTop = msgs.scrollHeight;
+    } catch(e) {
+      const loadEl = $(loadingId);
+      if (loadEl) loadEl.outerHTML = `<div class="msg msg-ai">Sorry, I couldn't connect. Please check your API key configuration.</div>`;
+    }
+  };
+  btn.onclick = send;
+  inp.onkeydown = e => { if (e.key === 'Enter') send(); };
+}
+
+function sendSuggestedQ(q) {
+  const inp = $('chat-in');
+  if (inp) { inp.value = q; }
+  setTimeout(() => { const btn = $('chat-send'); if(btn) btn.click(); }, 10);
+}
+
+function nextStep(step) {
+  if (step === 0) {
+    const age = $('f-age')?.value, sex = $('f-sex')?.value;
+    if (!age || !sex) { alert('Please fill in required fields (Age and Biological Sex).'); return; }
+    state.profile.age = age; state.profile.sex = sex;
+    state.profile.height = $('f-height')?.value; state.profile.weight = $('f-weight')?.value;
+  }
+  if (step === 1) {
+    state.profile.smoke = $('f-smoke')?.value;
+    state.profile.alcohol = $('f-alcohol')?.value;
+  }
+  if (step === 2) {
+    state.profile.exercise = $('f-exercise')?.value;
+    state.profile.lastExam = $('f-lastexam')?.value;
+  }
+  if (step === 3) {
+    state.profile.city = $('f-city')?.value;
+    state.profile.zip = $('f-zip')?.value;
+    state.recs = generateRecommendations(state.profile);
+    state.step = 4;
+    render();
+    return;
+  }
+  state.step++;
+  render();
+}
+
+function prevStep() { state.step = Math.max(0, state.step-1); render(); }
+function useGPS() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      state.profile.lat = pos.coords.latitude;
+      state.profile.lng = pos.coords.longitude;
+      state.profile.gpsUsed = true;
+      render();
+    }, () => alert('Unable to get location. Please enter manually.'));
+  } else { alert('Geolocation not supported by your browser.'); }
+}
+function setTab(t) { state.activeTab = t; render(); }
+function toggleFilter(f) { state.filters[f] = !state.filters[f]; render(); }
+function bookProvider(name) { alert(`In the full app, this opens a booking flow for ${name} with your insurance details and available time slots.`); }
+function getDirections(name) { window.open(`https://www.google.com/maps/search/${encodeURIComponent(name)}`, '_blank'); }
+function exportPDF() { alert('In production: generates a formatted PDF with all recommendations, your health score, and provider suggestions.'); }
+function shareEmail() { alert('In production: opens a pre-filled email draft to share with your doctor.'); }
+function copyLink() { alert('In production: copies a shareable link to your anonymized health report.'); }
+
+function renderTrendChart() {
+  const canvas = $('trend-chart');
+  if (!canvas || !window.Chart) return;
+  new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: ['Sep 2024','Mar 2025','Today'],
+      datasets: [{
+        label: 'Health Score',
+        data: [68, 74, state.recs.length ? calcScore() : 74],
+        borderColor: '#1d9e75',
+        backgroundColor: 'rgba(29,158,117,.08)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#1d9e75',
+        pointRadius: 5,
+        borderDash: [0],
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 40, max: 100, grid: { color: 'rgba(128,128,128,.1)' }, ticks: { color: '#8c95a8' } },
+        x: { grid: { display: false }, ticks: { color: '#8c95a8' } }
+      }
+    }
+  });
+}
+
+render();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>

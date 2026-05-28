@@ -1,18 +1,718 @@
-<table id="producttable">
-  <thead>
-    <tr>
-      <td>UPC_Code</td>
-      <td>Product_Name</td>
-    </tr>
-  </thead>
-  <tbody>
-    <!-- existing data could optionally be included here -->
-  </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HealthCheck — Know What You Need</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<template id="productrow">
-  <tr>
-    <td class="record"></td>
-    <td></td>
-  </tr>
-</template>
+  :root {
+    --cream: #FAF7F2;
+    --ink: #1C1917;
+    --ink-muted: #78716C;
+    --ink-faint: #D6D3CE;
+    --green: #2D6A4F;
+    --green-light: #E8F5EE;
+    --green-mid: #52B788;
+    --amber: #92400E;
+    --amber-light: #FEF3C7;
+    --red: #991B1B;
+    --red-light: #FEE2E2;
+    --blue: #1E40AF;
+    --blue-light: #DBEAFE;
+    --white: #FFFFFF;
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--ink);
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+
+  .logo span {
+    color: var(--green-mid);
+  }
+
+  .logo-sub {
+    font-size: 0.75rem;
+    color: #A8A29E;
+    font-weight: 300;
+    margin-left: auto;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+  }
+
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 em {
+    color: var(--green);
+    font-style: italic;
+  }
+
+  .hero p {
+    color: var(--ink-muted);
+    font-size: 1.05rem;
+    font-weight: 300;
+  }
+
+  .age-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--card-shadow);
+    max-width: 480px;
+    margin: 0 auto 3rem;
+  }
+
+  .age-card label {
+    display: block;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-muted);
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .age-input-row {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .age-input-row input[type="number"] {
+    flex: 1;
+    padding: 0.9rem 1.1rem;
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    border: 1.5px solid var(--ink-faint);
+    border-radius: 12px;
+    outline: none;
+    color: var(--ink);
+    background: var(--cream);
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .age-input-row input::-webkit-inner-spin-button,
+  .age-input-row input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  .age-input-row input:focus {
+    border-color: var(--green);
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 0.9rem 1.6rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+
+  .btn-primary:hover { background: #2C2A28; }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .age-display {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-sub {
+    color: var(--ink-muted);
+    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
+    font-weight: 300;
+  }
+
+  .checkups-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .checkup-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.4rem 1.25rem;
+    box-shadow: var(--card-shadow);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .checkup-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--category-color, var(--green-mid));
+  }
+
+  .checkup-card:hover {
+    border-color: var(--category-color, var(--green-mid));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+  }
+
+  .checkup-card.selected {
+    border-color: var(--category-color, var(--green-mid));
+    background: var(--category-bg, var(--green-light));
+  }
+
+  .checkup-icon {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .checkup-name {
+    font-weight: 500;
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .checkup-desc {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .checkup-freq {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-weight: 500;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: var(--category-bg, var(--green-light));
+    color: var(--category-color, var(--green));
+  }
+
+  .clinic-section {
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .selected-checkup-banner {
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 14px;
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .selected-checkup-banner strong {
+    font-weight: 500;
+  }
+
+  .selected-checkup-banner .change-btn {
+    margin-left: auto;
+    background: rgba(255,255,255,0.12);
+    border: none;
+    color: #D6D3CE;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.15s;
+  }
+
+  .selected-checkup-banner .change-btn:hover { background: rgba(255,255,255,0.2); }
+
+  .location-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .location-row input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1.5px solid var(--ink-faint);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.15s;
+    background: var(--white);
+    color: var(--ink);
+  }
+
+  .location-row input:focus { border-color: var(--green); }
+
+  .btn-search {
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    padding: 0.8rem 1.4rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-search:hover { background: #235C42; }
+
+  .clinics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .clinic-card {
+    background: var(--white);
+    border-radius: 14px;
+    padding: 1.25rem 1.4rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    animation: fadeIn 0.35s ease both;
+  }
+
+  .clinic-card:nth-child(2) { animation-delay: 0.06s; }
+  .clinic-card:nth-child(3) { animation-delay: 0.12s; }
+
+  .clinic-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--green-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+
+  .clinic-info { flex: 1; }
+
+  .clinic-name {
+    font-weight: 500;
+    font-size: 0.98rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .clinic-address {
+    font-size: 0.83rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+  }
+
+  .clinic-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .clinic-tag {
+    font-size: 0.72rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+
+  .tag-avail { background: var(--green-light); color: var(--green); }
+  .tag-spec { background: var(--blue-light); color: var(--blue); }
+  .tag-urgent { background: var(--amber-light); color: var(--amber); }
+
+  .clinic-rating {
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .stars { color: #F59E0B; }
+
+  .loading-dots {
+    display: flex;
+    gap: 6px;
+    padding: 1.5rem 0;
+    justify-content: center;
+  }
+
+  .loading-dots span {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    animation: bounce 1.2s infinite ease-in-out;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--ink-muted);
+  }
+
+  .empty-state .big-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+  .empty-state p { font-weight: 300; }
+
+  #checkup-section, #clinic-section { display: none; }
+  #checkup-section.visible, #clinic-section.visible { display: block; }
+
+  .disclaimer {
+    margin-top: 3rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--ink-faint);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .disclaimer strong { font-weight: 500; color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Health<span>Check</span></div>
+  <div class="logo-sub">Preventive Care Guide</div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Your age tells you<br><em>what to check.</em></h1>
+    <p>Enter your age to see the preventive screenings recommended for you.</p>
+  </div>
+
+  <div class="age-card">
+    <label for="age-input">Your age</label>
+    <div class="age-input-row">
+      <input type="number" id="age-input" min="1" max="120" placeholder="—" />
+      <button class="btn-primary" onclick="findCheckups()">Show checkups →</button>
+    </div>
+    <div class="age-display" id="age-group-display"></div>
+  </div>
+
+  <div id="checkup-section">
+    <div class="section-title" id="checkup-title"></div>
+    <div class="section-sub" id="checkup-sub"></div>
+    <div class="checkups-grid" id="checkups-grid"></div>
+  </div>
+
+  <div id="clinic-section" class="clinic-section">
+    <div class="selected-checkup-banner" id="selected-banner">
+      <span>🔍</span>
+      <strong id="selected-name"></strong>
+      <button class="change-btn" onclick="clearClinic()">Change ✕</button>
+    </div>
+
+    <div class="section-title">Find a clinic near you</div>
+    <div class="section-sub">Enter your city or ZIP code to see recommended providers.</div>
+
+    <div class="location-row">
+      <input type="text" id="location-input" placeholder="e.g. New York, NY or 10001" />
+      <button class="btn-search" onclick="findClinics()">Search</button>
+    </div>
+
+    <div id="clinics-output"></div>
+  </div>
+
+  <div class="disclaimer">
+    <strong>Medical disclaimer:</strong> This tool provides general health screening guidelines based on widely accepted preventive care recommendations. It is not a substitute for professional medical advice. Always consult your doctor or primary care provider about which screenings are right for you.
+  </div>
+</main>
+
+<script>
+const CHECKUP_DATA = {
+  child: {
+    label: "Children (1–17)",
+    title: "Recommended checkups for children & teens",
+    sub: "Regular well-child visits are the cornerstone of preventive care in this age group.",
+    items: [
+      { icon: "🩺", name: "Well-child visit", desc: "Annual physical exam to monitor growth, development, and overall health.", freq: "Annually", color: "#2D6A4F", bg: "#E8F5EE" },
+      { icon: "💉", name: "Vaccinations", desc: "Immunizations per the CDC schedule — flu, MMR, HPV (11+), and others.", freq: "Per schedule", color: "#1E40AF", bg: "#DBEAFE" },
+      { icon: "👁️", name: "Vision screening", desc: "Eye test to catch nearsightedness, farsightedness, or lazy eye early.", freq: "Every 1–2 years", color: "#6D28D9", bg: "#EDE9FE" },
+      { icon: "🦷", name: "Dental checkup", desc: "Cavity prevention, fluoride treatment, and orthodontic assessment.", freq: "Every 6 months", color: "#B45309", bg: "#FEF3C7" },
+      { icon: "👂", name: "Hearing test", desc: "Audiometry to detect hearing loss that can affect learning.", freq: "Every 1–2 years", color: "#065F46", bg: "#D1FAE5" },
+      { icon: "🩸", name: "Blood pressure check", desc: "Hypertension screening beginning at age 3.", freq: "Annually", color: "#9F1239", bg: "#FFE4E6" },
+    ]
+  },
+  youngAdult: {
+    label: "Young Adults (18–39)",
+    title: "Recommended checkups for ages 18–39",
+    sub: "Preventive care at this stage sets the foundation for long-term health.",
+    items: [
+      { icon: "🩺", name: "General physical", desc: "Blood pressure, cholesterol, BMI, and overall baseline health assessment.", freq: "Every 1–3 years", color: "#2D6A4F", bg: "#E8F5EE" },
+      { icon: "🦷", name: "Dental checkup", desc: "Professional cleaning and early cavity or gum disease detection.", freq: "Every 6 months", color: "#B45309", bg: "#FEF3C7" },
+      { icon: "👁️", name: "Eye exam", desc: "Vision correction check and early glaucoma screening.", freq: "Every 2 years", color: "#6D28D9", bg: "#EDE9FE" },
+      { icon: "🩸", name: "Blood pressure", desc: "Screen for hypertension, which often has no symptoms.", freq: "Every 2 years", color: "#9F1239", bg: "#FFE4E6" },
+      { icon: "🧪", name: "STI screening", desc: "HIV, chlamydia, and other STI tests based on lifestyle and risk.", freq: "Annually (if at risk)", color: "#1E40AF", bg: "#DBEAFE" },
+      { icon: "🧠", name: "Mental health screen", desc: "Depression and anxiety screening during routine primary care visits.", freq: "Annually", color: "#065F46", bg: "#D1FAE5" },
+      { icon: "💉", name: "Vaccinations", desc: "Flu, Tdap booster, HPV (up to 26), and travel vaccines as needed.", freq: "Per schedule", color: "#92400E", bg: "#FDE68A" },
+    ]
+  },
+  middleAge: {
+    label: "Middle Age (40–64)",
+    title: "Recommended checkups for ages 40–64",
+    sub: "Screenings become more important as risk for chronic disease increases.",
+    items: [
+      { icon: "🩺", name: "Annual physical", desc: "Comprehensive metabolic panel, blood pressure, weight, and lifestyle review.", freq: "Annually", color: "#2D6A4F", bg: "#E8F5EE" },
+      { icon: "❤️", name: "Cardiovascular screening", desc: "Cholesterol, triglycerides, and 10-year heart disease risk assessment.", freq: "Every 4–6 years", color: "#9F1239", bg: "#FFE4E6" },
+      { icon: "🩻", name: "Colorectal cancer screen", desc: "Colonoscopy or stool-based test starting at age 45.", freq: "Every 1–10 years", color: "#1E40AF", bg: "#DBEAFE" },
+      { icon: "🫀", name: "Diabetes screening", desc: "Fasting blood glucose and HbA1c to detect pre-diabetes or diabetes.", freq: "Every 3 years", color: "#B45309", bg: "#FEF3C7" },
+      { icon: "👁️", name: "Eye exam / glaucoma", desc: "Pressure and optic nerve check — glaucoma risk rises after 40.", freq: "Every 2 years", color: "#6D28D9", bg: "#EDE9FE" },
+      { icon: "🦷", name: "Dental checkup", desc: "Gum disease, oral cancer screening, and cavity prevention.", freq: "Every 6 months", color: "#065F46", bg: "#D1FAE5" },
+      { icon: "🔬", name: "Skin cancer check", desc: "Full-body dermatology exam to identify suspicious moles or lesions.", freq: "Annually", color: "#92400E", bg: "#FDE68A" },
+      { icon: "🩴", name: "Bone density (women)", desc: "DEXA scan to assess osteoporosis risk, especially post-menopause.", freq: "As recommended", color: "#6D28D9", bg: "#EDE9FE" },
+    ]
+  },
+  senior: {
+    label: "Seniors (65+)",
+    title: "Recommended checkups for ages 65+",
+    sub: "Comprehensive preventive care at this stage supports healthy aging and independence.",
+    items: [
+      { icon: "🩺", name: "Annual wellness visit", desc: "Medicare-covered comprehensive review including functional and cognitive assessment.", freq: "Annually", color: "#2D6A4F", bg: "#E8F5EE" },
+      { icon: "❤️", name: "Cardiovascular screening", desc: "Blood pressure, cholesterol, EKG, and arterial health evaluation.", freq: "Annually", color: "#9F1239", bg: "#FFE4E6" },
+      { icon: "🧠", name: "Cognitive screening", desc: "Early detection of Alzheimer's disease, dementia, or memory concerns.", freq: "Annually", color: "#6D28D9", bg: "#EDE9FE" },
+      { icon: "🦴", name: "Bone density (DEXA)", desc: "Osteoporosis screening to prevent fractures and falls.", freq: "Every 2 years", color: "#1E40AF", bg: "#DBEAFE" },
+      { icon: "🫀", name: "Diabetes management", desc: "Blood glucose and HbA1c monitoring for prevention and management.", freq: "Every 3–6 months", color: "#B45309", bg: "#FEF3C7" },
+      { icon: "🩻", name: "Colorectal cancer screen", desc: "Continued colonoscopy or FIT testing until age 75.", freq: "Per recommendation", color: "#065F46", bg: "#D1FAE5" },
+      { icon: "👁️", name: "Eye exam", desc: "Macular degeneration, cataracts, and glaucoma screening.", freq: "Annually", color: "#92400E", bg: "#FDE68A" },
+      { icon: "💉", name: "Vaccinations", desc: "Flu, pneumococcal, shingles (Shingrix), and COVID-19 boosters.", freq: "Per schedule", color: "#9F1239", bg: "#FFE4E6" },
+      { icon: "👂", name: "Hearing test", desc: "Audiometry to detect age-related hearing loss and prevent falls.", freq: "Annually", color: "#2D6A4F", bg: "#E8F5EE" },
+    ]
+  }
+};
+
+let selectedCheckup = null;
+
+function getAgeGroup(age) {
+  if (age < 18) return 'child';
+  if (age < 40) return 'youngAdult';
+  if (age < 65) return 'middleAge';
+  return 'senior';
+}
+
+function findCheckups() {
+  const age = parseInt(document.getElementById('age-input').value);
+  if (!age || age < 1 || age > 120) {
+    document.getElementById('age-input').focus();
+    return;
+  }
+
+  const group = getAgeGroup(age);
+  const data = CHECKUP_DATA[group];
+
+  document.getElementById('age-group-display').textContent = `Showing recommendations for: ${data.label}`;
+  document.getElementById('checkup-title').textContent = data.title;
+  document.getElementById('checkup-sub').textContent = data.sub;
+
+  const grid = document.getElementById('checkups-grid');
+  grid.innerHTML = '';
+
+  data.items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'checkup-card';
+    card.style.setProperty('--category-color', item.color);
+    card.style.setProperty('--category-bg', item.bg);
+    card.innerHTML = `
+      <div class="checkup-icon">${item.icon}</div>
+      <div class="checkup-name">${item.name}</div>
+      <div class="checkup-desc">${item.desc}</div>
+      <span class="checkup-freq">${item.freq}</span>
+    `;
+    card.onclick = () => selectCheckup(item, card);
+    grid.appendChild(card);
+  });
+
+  document.getElementById('checkup-section').classList.add('visible');
+  document.getElementById('clinic-section').classList.remove('visible');
+  selectedCheckup = null;
+
+  document.getElementById('checkup-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectCheckup(item, cardEl) {
+  document.querySelectorAll('.checkup-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  selectedCheckup = item;
+
+  document.getElementById('selected-name').textContent = `${item.icon} ${item.name}`;
+  document.getElementById('clinic-section').classList.add('visible');
+  document.getElementById('clinics-output').innerHTML = '';
+  document.getElementById('location-input').value = '';
+
+  document.getElementById('clinic-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearClinic() {
+  document.getElementById('clinic-section').classList.remove('visible');
+  document.querySelectorAll('.checkup-card').forEach(c => c.classList.remove('selected'));
+  selectedCheckup = null;
+}
+
+async function findClinics() {
+  const location = document.getElementById('location-input').value.trim();
+  if (!location) {
+    document.getElementById('location-input').focus();
+    return;
+  }
+
+  const output = document.getElementById('clinics-output');
+  output.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div>`;
+
+  try {
+    const prompt = `You are a helpful medical assistant. A user is looking for clinics or hospitals that offer "${selectedCheckup.name}" near "${location}".
+
+Suggest 3 realistic, plausible clinic or hospital options for this location. Format your response ONLY as valid JSON (no markdown, no extra text) like this:
+[
+  {
+    "name": "Clinic Name",
+    "address": "123 Main St, City, State",
+    "rating": 4.5,
+    "type": "General Hospital",
+    "availability": "Available Mon–Fri",
+    "specialNote": "One short helpful note about this clinic"
+  }
+]
+
+Make the suggestions realistic for the area. Vary the types (hospital, urgent care, specialty clinic, community health center). Keep addresses plausible for the given location.`;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const text = data.content.map(i => i.text || "").join("\n");
+    const clean = text.replace(/```json|```/g, "").trim();
+    const clinics = JSON.parse(clean);
+
+    renderClinics(clinics);
+  } catch (err) {
+    output.innerHTML = `
+      <div class="empty-state">
+        <div class="big-icon">⚠️</div>
+        <p>Couldn't load clinic suggestions. Please try again.</p>
+      </div>`;
+  }
+}
+
+function renderClinics(clinics) {
+  const output = document.getElementById('clinics-output');
+  output.innerHTML = '';
+
+  const list = document.createElement('div');
+  list.className = 'clinics-list';
+
+  clinics.forEach(clinic => {
+    const stars = '★'.repeat(Math.floor(clinic.rating)) + (clinic.rating % 1 >= 0.5 ? '½' : '');
+    const card = document.createElement('div');
+    card.className = 'clinic-card';
+    card.innerHTML = `
+      <div class="clinic-icon-wrap">🏥</div>
+      <div class="clinic-info">
+        <div class="clinic-name">${clinic.name}</div>
+        <div class="clinic-address">📍 ${clinic.address}</div>
+        <div class="clinic-tags">
+          <span class="clinic-tag tag-avail">${clinic.availability}</span>
+          <span class="clinic-tag tag-spec">${clinic.type}</span>
+          ${clinic.specialNote ? `<span class="clinic-tag tag-urgent">${clinic.specialNote}</span>` : ''}
+        </div>
+      </div>
+      <div class="clinic-rating">
+        <span class="stars">${stars}</span> ${clinic.rating.toFixed(1)}
+      </div>
+    `;
+    list.appendChild(card);
+  });
+
+  output.appendChild(list);
+}
+
+document.getElementById('age-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') findCheckups();
+});
+
+document.getElementById('location-input') && document.getElementById('location-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') findClinics();
+});
+</script>
+</body>
+</html>

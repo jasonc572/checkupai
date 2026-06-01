@@ -660,7 +660,7 @@ const response = await fetch("https://purple-wildflower-2d4e.hunterc23.workers.d
 
     const data = await response.json();
     const text = data.choices[0].message.content;
-    const clean = text.replace(/```json|```/g, "").trim();
+    const clean = text.replace(/<think>[\s\S]*?<\/think>/g, "").replace(/```json|```/g, "").trim();
     const clinics = JSON.parse(clean);
 
     renderClinics(clinics);

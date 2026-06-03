@@ -35,6 +35,19 @@
     <div class="checkups-grid" id="checkups-grid"></div>
   </div>
 
+  <div id="quiz-section" class="quiz-section">
+    <div class="selected-checkup-banner" id="quiz-banner">
+      <span>📋</span>
+      <strong id="quiz-banner-name"></strong>
+      <button class="change-btn" onclick="closeQuiz()">Close ✕</button>
+    </div>
+    <div class="section-title">How urgent is this for you?</div>
+    <div class="section-sub">Answer a few quick questions so we can assess your personal urgency score.</div>
+    <div class="quiz-questions" id="quiz-questions"></div>
+    <button class="btn-quiz-submit" id="quiz-submit-btn" onclick="submitQuiz()">Get my urgency score →</button>
+    <div id="quiz-result"></div>
+  </div>
+
   <div id="clinic-section" class="clinic-section">
     <div class="selected-checkup-banner" id="selected-banner">
       <span>🔍</span>

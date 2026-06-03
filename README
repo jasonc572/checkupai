@@ -1,8 +1,11 @@
-this is used to help people who are unaware of what medical checkups they have to do at the age they're in
+The app uses your age to recommend you dental checkups to do. This is helpful for people unaware of what checkups they need by suggesting them different checkups to do and even giving clinics near your address to help you get the check ups you need.
+To run it locally you have to download the github file and extract it, then it should be good to go.
+The Research Paper I used is: https://www.sciencedirect.com/science/article/pii/S0277953623003799
+This research paper has helped influence our code as it's something our App recommends screening for. The research paper is about the low screening rates for colorectal cancer. This is also why I thought of this project in the first place as it relates to me personally. I remember seeing a tool my Dad received to check for cancer, and he just didn't even bother to use it.
+Jason Chen Contributions: Did primarily frontend, ai prompting, and led the project by giving instructions and coming up with the Ideas
+Hunter Chen Contributions: Did primarily frontend, did most of the ai prompting, and set up the cloudfare so we can use the API
+
+Video Demo:
 
 
-
-
-Primary contribution area
-Hunter: backend
-Jason: frontend
+AGent Reflection

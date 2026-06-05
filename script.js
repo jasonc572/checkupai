@@ -117,38 +117,217 @@ function selectCheckup(item, cardEl) {
   openQuiz(item);
 }
 
+// Per-checkup tailored quiz questions, keyed by checkup name
 const QUIZ_QUESTIONS = {
-  child: [
-    { id: 'lastVisit', text: 'When was the last well-child visit?', options: ['Within 12 months', '1–2 years ago', '2+ years ago', 'Never / unsure'] },
-    { id: 'symptoms', text: 'Any recent concerns about growth, vision, or hearing?', options: ['No concerns', 'Minor concerns', 'Yes, noticeable issues'] },
-    { id: 'vaccines', text: 'Are vaccinations up to date?', options: ['Yes, fully up to date', 'Some may be missing', 'Not sure', 'No, behind schedule'] },
+
+  // ── CHILD ──────────────────────────────────────────────────────────────────
+  "Well-child visit": [
+    { id: 'lastVisit', text: 'When was the child\'s last well-child visit?', options: ['Within 12 months', '1–2 years ago', '2+ years ago', 'Never / unsure'] },
+    { id: 'growthConcerns', text: 'Any concerns about height, weight, or development milestones?', options: ['No concerns', 'Slight concerns', 'Noticeable delays or issues'] },
+    { id: 'behaviorMood', text: 'Have there been changes in mood, behavior, or school performance?', options: ['None at all', 'Minor changes', 'Significant changes'] },
+    { id: 'chronicIllness', text: 'Does the child have any ongoing or chronic health conditions?', options: ['No', 'One managed condition', 'Multiple conditions'] },
   ],
-  youngAdult: [
+  "Vaccinations": [
+    { id: 'vaccStatus', text: 'Are the child\'s vaccines up to date per the CDC schedule?', options: ['Yes, fully current', 'A few may be missing', 'Several missed', 'Not sure / never checked'] },
+    { id: 'lastVacc', text: 'When was the last vaccination received?', options: ['Within 6 months', '6–12 months ago', 'Over 1 year ago', 'Don\'t remember'] },
+    { id: 'fluShot', text: 'Did the child receive a flu shot this season?', options: ['Yes', 'Not yet this season', 'Rarely / never gets flu shots'] },
+    { id: 'reaction', text: 'Any prior adverse reactions to vaccines?', options: ['No reactions', 'Mild reactions (soreness, fever)', 'Significant reaction requiring care'] },
+  ],
+  "Vision screening": [
+    { id: 'lastEye', text: 'When was the child\'s last eye exam?', options: ['Within 1 year', '1–2 years ago', '2+ years ago', 'Never'] },
+    { id: 'squinting', text: 'Does the child squint, sit close to screens, or complain of headaches?', options: ['None of these', 'Occasionally', 'Frequently'] },
+    { id: 'schoolPerf', text: 'Has vision difficulty affected reading or school performance?', options: ['No impact', 'Some difficulty', 'Noticeably struggling'] },
+    { id: 'familyVision', text: 'Does the family have a history of nearsightedness or lazy eye?', options: ['No family history', 'One parent affected', 'Both parents or siblings affected'] },
+  ],
+  "Dental checkup": [
+    { id: 'lastDental', text: 'When was the last dental visit?', options: ['Within 6 months', '6–12 months ago', '1–2 years ago', 'Over 2 years / never'] },
+    { id: 'toothPain', text: 'Any tooth pain, sensitivity, or visible cavities?', options: ['None', 'Mild sensitivity', 'Pain or visible decay'] },
+    { id: 'brushing', text: 'How consistently does the child brush and floss?', options: ['Twice daily + floss', 'Once daily', 'Inconsistently'] },
+    { id: 'sweetDiet', text: 'How often does the child consume sugary drinks or snacks?', options: ['Rarely', 'A few times a week', 'Daily'] },
+  ],
+  "Hearing test": [
+    { id: 'lastHearing', text: 'When was the child\'s last hearing test?', options: ['Within 1 year', '1–2 years ago', '2+ years ago', 'Never / unsure'] },
+    { id: 'responseSound', text: 'Does the child respond normally to sounds and conversation?', options: ['Yes, no issues', 'Sometimes delayed', 'Frequently misses sounds or speech'] },
+    { id: 'schoolListen', text: 'Any signs of difficulty listening or following instructions at school?', options: ['No', 'Occasional issues', 'Regular concern from teachers'] },
+    { id: 'earInfections', text: 'History of frequent ear infections?', options: ['Rarely or never', '1–2 infections', '3 or more infections'] },
+  ],
+  "Blood pressure check": [
+    { id: 'lastBP', text: 'When was the child\'s blood pressure last checked?', options: ['Within 1 year', '1–2 years ago', 'Over 2 years ago', 'Never / not sure'] },
+    { id: 'bpResult', text: 'Was the last reading in the normal range?', options: ['Yes, normal', 'Borderline high', 'High / flagged by doctor', 'Never been checked'] },
+    { id: 'weight', text: 'Is the child at a healthy weight for their age?', options: ['Yes', 'Slightly overweight', 'Overweight or obese'] },
+    { id: 'familyBP', text: 'Family history of high blood pressure or kidney disease?', options: ['No known history', 'One parent', 'Multiple family members'] },
+  ],
+
+  // ── YOUNG ADULT ────────────────────────────────────────────────────────────
+  "General physical": [
     { id: 'lastPhysical', text: 'When was your last general physical exam?', options: ['Within 1 year', '1–3 years ago', '3+ years ago', 'Never'] },
-    { id: 'riskFactors', text: 'Do you smoke, drink heavily, or have high-stress lifestyle?', options: ['None of these', 'One of these', 'Two or more'] },
+    { id: 'symptoms', text: 'Are you experiencing any unexplained symptoms (fatigue, pain, weight change)?', options: ['None', 'Mild or occasional', 'Persistent or worsening'] },
+    { id: 'riskFactors', text: 'Do you smoke, drink heavily, or have a high-stress lifestyle?', options: ['None of these', 'One of these', 'Two or more'] },
     { id: 'familyHistory', text: 'Family history of heart disease, diabetes, or cancer?', options: ['No known history', 'One condition', 'Multiple conditions'] },
-    { id: 'symptoms', text: 'Any current symptoms or health concerns?', options: ['None', 'Minor symptoms', 'Ongoing or worsening symptoms'] },
   ],
-  middleAge: [
-    { id: 'lastScreening', text: 'When was your last preventive screening (any type)?', options: ['Within 1 year', '1–3 years ago', '3+ years ago', 'Never / unsure'] },
-    { id: 'bloodPressure', text: 'Do you have high blood pressure or high cholesterol?', options: ['No', 'One of these', 'Both', 'Unsure'] },
-    { id: 'familyHistory', text: 'Family history of colorectal cancer, heart disease, or diabetes?', options: ['No history', 'One relative', 'Multiple relatives'] },
-    { id: 'weight', text: 'How would you describe your current weight / BMI?', options: ['Healthy range', 'Slightly overweight', 'Obese or very overweight'] },
-    { id: 'smoking', text: 'Do you currently smoke or have a significant smoking history?', options: ['Never smoked', 'Former smoker', 'Current smoker'] },
+  "Eye exam": [
+    { id: 'lastEye', text: 'When was your last comprehensive eye exam?', options: ['Within 1 year', '1–2 years ago', '2–4 years ago', 'Over 4 years / never'] },
+    { id: 'visionChange', text: 'Have you noticed any changes in your vision lately?', options: ['No changes', 'Slightly blurrier', 'Significant change'] },
+    { id: 'screenTime', text: 'How many hours a day do you spend on screens?', options: ['Under 4 hours', '4–8 hours', 'Over 8 hours'] },
+    { id: 'headaches', text: 'Do you get headaches or eye strain after reading or screen use?', options: ['Rarely / never', 'Occasionally', 'Frequently'] },
   ],
-  senior: [
-    { id: 'lastWellness', text: 'When was your last annual wellness visit?', options: ['Within 12 months', '1–2 years ago', '2+ years ago', 'Never / unsure'] },
-    { id: 'chronicConditions', text: 'Do you have any chronic conditions (diabetes, heart disease, etc.)?', options: ['None', 'One managed condition', 'Multiple conditions'] },
-    { id: 'mobility', text: 'Any concerns about falls, balance, or mobility?', options: ['No concerns', 'Occasional issues', 'Frequent or serious concerns'] },
-    { id: 'memory', text: 'Any memory or cognitive concerns?', options: ['None', 'Minor forgetfulness', 'Noticeable changes'] },
-    { id: 'medications', text: 'How many prescription medications do you take?', options: ['None', '1–2', '3–5', '6 or more'] },
-  ]
+  "Blood pressure": [
+    { id: 'lastBP', text: 'When was your blood pressure last checked?', options: ['Within 6 months', '6–12 months ago', '1–2 years ago', 'Over 2 years / never'] },
+    { id: 'bpResult', text: 'Was your last reading in the normal range?', options: ['Yes, normal', 'Borderline / "watch it"', 'High — I\'m monitoring it', 'I don\'t know'] },
+    { id: 'lifestyle', text: 'How is your diet and physical activity level?', options: ['Balanced diet + regular exercise', 'Moderate', 'Poor diet + mostly sedentary'] },
+    { id: 'familyBP', text: 'Family history of high blood pressure or stroke?', options: ['No known history', 'One parent or sibling', 'Multiple family members'] },
+    { id: 'stress', text: 'How would you rate your current stress level?', options: ['Low', 'Moderate', 'High', 'Chronic / overwhelming'] },
+  ],
+  "STI screening": [
+    { id: 'lastSTI', text: 'When was your last STI screening?', options: ['Within 6 months', '6–12 months ago', '1–2 years ago', 'Never or over 2 years ago'] },
+    { id: 'partners', text: 'How many sexual partners have you had in the past year?', options: ['One committed partner', '2–3 partners', '4+ partners', 'Prefer not to say'] },
+    { id: 'protection', text: 'How consistently do you use barrier protection (condoms)?', options: ['Always', 'Most of the time', 'Occasionally', 'Rarely or never'] },
+    { id: 'symptoms', text: 'Any unusual symptoms (discharge, sores, burning)?', options: ['No symptoms', 'Mild symptoms', 'Noticeable or worsening symptoms'] },
+  ],
+  "Mental health screen": [
+    { id: 'moodDuration', text: 'For how long have you been feeling low, anxious, or stressed?', options: ['I\'m feeling fine', 'A few days / situational', 'A few weeks', 'Over a month'] },
+    { id: 'dailyFunction', text: 'Is your mood affecting work, school, or relationships?', options: ['Not at all', 'Mildly', 'Significantly'] },
+    { id: 'sleep', text: 'How is your sleep quality?', options: ['Good — 7–9 hours', 'Fair — often disturbed', 'Poor — difficulty sleeping or oversleeping'] },
+    { id: 'support', text: 'Do you have a therapist or mental health provider you see?', options: ['Yes, regularly', 'Seen one before but not now', 'Never sought help'] },
+    { id: 'substanceUse', text: 'Do you use alcohol or substances to cope with stress or emotions?', options: ['No', 'Occasionally', 'Regularly'] },
+  ],
+  "Vaccinations (young adult)": [
+    { id: 'fluVacc', text: 'Did you get a flu shot this year?', options: ['Yes', 'Not yet this season', 'I skip flu shots'] },
+    { id: 'tdap', text: 'Have you had a Tdap booster in the last 10 years?', options: ['Yes', 'Not sure', 'No — it\'s been a long time'] },
+    { id: 'hpv', text: 'Have you completed the HPV vaccine series (if under 27)?', options: ['Yes, completed', 'Partially done', 'Never started', 'Over 27 / not applicable'] },
+    { id: 'travel', text: 'Do you travel internationally or work in healthcare?', options: ['No', 'Occasionally', 'Yes, frequently'] },
+  ],
+
+  // ── MIDDLE AGE ─────────────────────────────────────────────────────────────
+  "Annual physical": [
+    { id: 'lastPhysical', text: 'When was your last comprehensive physical?', options: ['Within 1 year', '1–2 years ago', '2–4 years ago', 'Over 4 years / never'] },
+    { id: 'labWork', text: 'Have you had blood work (cholesterol, blood sugar) done recently?', options: ['Within 1 year', '1–3 years ago', 'Over 3 years ago', 'Never'] },
+    { id: 'symptoms', text: 'Any new or worsening symptoms (fatigue, pain, weight change)?', options: ['None', 'Mild', 'Moderate', 'Significant'] },
+    { id: 'chronicDx', text: 'Do you have any diagnosed chronic conditions?', options: ['None', 'One managed condition', 'Two or more conditions'] },
+  ],
+  "Cardiovascular screening": [
+    { id: 'lastCardio', text: 'When was your last cholesterol or heart risk assessment?', options: ['Within 1 year', '1–3 years ago', '3–6 years ago', 'Never / unsure'] },
+    { id: 'cholesterol', text: 'Do you know your cholesterol levels?', options: ['Yes — within normal range', 'Yes — borderline or high', 'No, I haven\'t been tested recently'] },
+    { id: 'symptoms', text: 'Any chest discomfort, shortness of breath, or irregular heartbeat?', options: ['None', 'Rarely', 'Occasionally', 'Frequently'] },
+    { id: 'lifestyle', text: 'How would you describe your diet and exercise habits?', options: ['Heart-healthy diet + regular exercise', 'Moderate', 'Poor diet + mostly sedentary'] },
+    { id: 'familyHeart', text: 'Family history of early heart attack or stroke?', options: ['No', 'One relative after age 60', 'One relative before age 60', 'Multiple family members'] },
+  ],
+  "Colorectal cancer screen": [
+    { id: 'lastColon', text: 'Have you ever had a colonoscopy or colorectal screening?', options: ['Yes — within last 10 years', 'Yes — over 10 years ago', 'Never', 'Only a stool test (FIT/Cologuard)'] },
+    { id: 'bowelChanges', text: 'Any changes in bowel habits, blood in stool, or abdominal pain?', options: ['None', 'Mild / occasional', 'Persistent or worsening'] },
+    { id: 'familyColon', text: 'Family history of colorectal cancer or polyps?', options: ['No', 'One relative (after 60)', 'One relative (before 60)', 'Multiple relatives'] },
+    { id: 'ibd', text: 'Do you have Crohn\'s disease or ulcerative colitis?', options: ['No', 'Diagnosed but well managed', 'Active or poorly controlled'] },
+  ],
+  "Diabetes screening": [
+    { id: 'lastGlucose', text: 'When was your last fasting blood glucose or HbA1c test?', options: ['Within 1 year', '1–3 years ago', 'Over 3 years ago', 'Never'] },
+    { id: 'glucoseResult', text: 'Were your results in the normal range?', options: ['Yes, normal', 'Borderline / pre-diabetic', 'Diabetic range', 'Don\'t know'] },
+    { id: 'symptoms', text: 'Frequent thirst, urination, fatigue, or blurred vision?', options: ['None', 'Occasional', 'Frequent'] },
+    { id: 'weight', text: 'How would you describe your current weight?', options: ['Healthy BMI', 'Slightly overweight', 'Obese or significantly overweight'] },
+    { id: 'familyDiabetes', text: 'Family history of type 2 diabetes?', options: ['No', 'One parent or sibling', 'Multiple family members'] },
+  ],
+  "Eye exam / glaucoma": [
+    { id: 'lastEye', text: 'When was your last comprehensive eye exam?', options: ['Within 1 year', '1–2 years ago', '2–4 years ago', 'Over 4 years / never'] },
+    { id: 'pressureCheck', text: 'Have you ever had your eye pressure (IOP) measured?', options: ['Yes — normal', 'Yes — borderline or elevated', 'Never'] },
+    { id: 'peripheralVision', text: 'Any loss of side (peripheral) vision or blurred spots?', options: ['None', 'Possibly — hard to tell', 'Yes, noticeable'] },
+    { id: 'familyGlaucoma', text: 'Family history of glaucoma or other eye diseases?', options: ['No', 'One family member', 'Multiple family members'] },
+  ],
+  "Skin cancer check": [
+    { id: 'lastSkin', text: 'When was your last full-body skin exam by a dermatologist?', options: ['Within 1 year', '1–3 years ago', 'Over 3 years ago', 'Never'] },
+    { id: 'moleChanges', text: 'Have you noticed any new, changing, or unusual moles or spots?', options: ['None', 'One suspicious spot', 'Multiple spots I\'m unsure about'] },
+    { id: 'sunExposure', text: 'How much sun exposure do you typically get?', options: ['Minimal — mostly indoors', 'Moderate — occasional outdoor activity', 'High — outdoors frequently or tanning bed use'] },
+    { id: 'sunburns', text: 'Have you had significant sunburns in the past?', options: ['Rarely / never', 'A few times', 'Many times / severe burns'] },
+    { id: 'familySkin', text: 'Family history of melanoma or skin cancer?', options: ['No', 'One relative', 'Multiple relatives'] },
+  ],
+  "Bone density (women)": [
+    { id: 'lastDEXA', text: 'Have you ever had a DEXA bone density scan?', options: ['Yes — normal results', 'Yes — low bone density found', 'Never'] },
+    { id: 'menopause', text: 'What is your menopausal status?', options: ['Pre-menopausal', 'Peri-menopausal', 'Post-menopausal (under 5 years)', 'Post-menopausal (over 5 years)'] },
+    { id: 'fractures', text: 'Any fractures from minor injuries or falls in the past few years?', options: ['None', 'One fracture', 'Two or more fractures'] },
+    { id: 'calcium', text: 'Do you get adequate calcium and vitamin D in your diet or supplements?', options: ['Yes, consistently', 'Sometimes', 'Rarely / not sure'] },
+    { id: 'familyOsteo', text: 'Family history of osteoporosis or hip fractures?', options: ['No known history', 'One relative', 'Multiple relatives'] },
+  ],
+
+  // ── SENIOR ─────────────────────────────────────────────────────────────────
+  "Annual wellness visit": [
+    { id: 'lastWellness', text: 'When was your last Medicare Annual Wellness Visit?', options: ['Within 12 months', '1–2 years ago', '2+ years ago', 'Never had one'] },
+    { id: 'chronicConditions', text: 'How many chronic conditions are you currently managing?', options: ['None', '1–2 conditions', '3–4 conditions', '5 or more'] },
+    { id: 'medications', text: 'How many prescription medications do you take daily?', options: ['None', '1–2', '3–5', '6 or more'] },
+    { id: 'newSymptoms', text: 'Any new symptoms or health changes since your last visit?', options: ['None', 'Minor changes', 'Several new concerns'] },
+  ],
+  "Cardiovascular screening (senior)": [
+    { id: 'lastCardio', text: 'When was your last heart or cholesterol check-up?', options: ['Within 6 months', '6–12 months ago', '1–2 years ago', 'Over 2 years ago'] },
+    { id: 'heartSymptoms', text: 'Any chest pain, shortness of breath, or irregular heartbeat?', options: ['None', 'Rarely', 'Occasionally', 'Frequently'] },
+    { id: 'bpControl', text: 'Is your blood pressure currently well controlled?', options: ['Yes, on track', 'Borderline — monitoring it', 'No, it\'s been elevated', 'Not sure'] },
+    { id: 'afib', text: 'Have you been diagnosed with AFib or experienced palpitations?', options: ['No', 'Suspected but undiagnosed', 'Yes, diagnosed'] },
+    { id: 'smoking', text: 'Do you smoke or have a significant smoking history?', options: ['Never smoked', 'Former smoker (10+ years ago)', 'Former smoker (within 10 years)', 'Current smoker'] },
+  ],
+  "Cognitive screening": [
+    { id: 'lastCognitive', text: 'Have you ever had a formal cognitive or memory screening?', options: ['Yes — within 1 year', 'Yes — over 2 years ago', 'Never'] },
+    { id: 'memoryIssues', text: 'How often do you forget things that affect daily life?', options: ['Rarely / normal forgetfulness', 'Occasionally — mild concern', 'Frequently — noticeably affecting life'] },
+    { id: 'confusionEpisodes', text: 'Have you or others noticed confusion, disorientation, or personality changes?', options: ['No', 'Rarely', 'Occasionally', 'Frequently'] },
+    { id: 'familyDementia', text: 'Family history of Alzheimer\'s or dementia?', options: ['No known history', 'One parent or sibling', 'Multiple family members'] },
+    { id: 'adc', text: 'Do you regularly engage in mentally stimulating activities (reading, puzzles, socializing)?', options: ['Yes, daily', 'A few times a week', 'Rarely'] },
+  ],
+  "Bone density (DEXA)": [
+    { id: 'lastDEXA', text: 'When was your last DEXA scan?', options: ['Within 2 years', '2–4 years ago', 'Over 4 years ago', 'Never'] },
+    { id: 'dexaResult', text: 'What were the results of your last bone density scan?', options: ['Normal', 'Osteopenia (low bone mass)', 'Osteoporosis diagnosed', 'Never been scanned'] },
+    { id: 'fallHistory', text: 'Have you had any falls or near-falls in the past year?', options: ['None', 'One fall', 'Two or more falls'] },
+    { id: 'fractures', text: 'Any fractures in the last 2 years (even from minor incidents)?', options: ['None', 'One fracture', 'Two or more fractures'] },
+    { id: 'supplementation', text: 'Are you taking calcium and vitamin D supplements?', options: ['Yes, both regularly', 'Calcium only or D only', 'Neither'] },
+  ],
+  "Diabetes management": [
+    { id: 'lastA1C', text: 'When was your last HbA1c (blood sugar) test?', options: ['Within 3 months', '3–6 months ago', '6–12 months ago', 'Over 1 year ago'] },
+    { id: 'a1cLevel', text: 'Is your blood sugar currently in your target range?', options: ['Yes, well controlled', 'Slightly elevated', 'Poorly controlled', 'Not sure'] },
+    { id: 'diabetesSymptoms', text: 'Any symptoms of poorly controlled diabetes (thirst, fatigue, blurred vision, foot numbness)?', options: ['None', 'One or two symptoms', 'Several symptoms'] },
+    { id: 'meds', text: 'Are you taking diabetes medication as prescribed?', options: ['Yes, consistently', 'Sometimes miss doses', 'Frequently miss doses', 'No medication prescribed'] },
+    { id: 'footExam', text: 'Have you had a foot exam by your doctor in the past year?', options: ['Yes', 'No', 'Never had one'] },
+  ],
+  "Colorectal cancer screen (senior)": [
+    { id: 'lastColon', text: 'When was your last colonoscopy or stool-based test?', options: ['Within 1 year (stool test) or 10 years (colonoscopy)', 'Due for repeat soon', 'Overdue', 'Never had one'] },
+    { id: 'bowelChanges', text: 'Any recent changes in bowel habits, rectal bleeding, or abdominal pain?', options: ['None', 'Mild or occasional', 'Persistent'] },
+    { id: 'polypHistory', text: 'Have polyps been found in prior screenings?', options: ['No polyps found', 'Low-risk polyps', 'High-risk or multiple polyps', 'Never screened'] },
+    { id: 'familyColon', text: 'Family history of colorectal cancer?', options: ['No', 'One relative', 'Multiple relatives'] },
+  ],
+  "Eye exam (senior)": [
+    { id: 'lastEye', text: 'When was your last eye exam?', options: ['Within 1 year', '1–2 years ago', 'Over 2 years ago', 'Can\'t recall'] },
+    { id: 'visionChange', text: 'Have you noticed changes in your central or side vision?', options: ['No changes', 'Mild blur or haziness', 'Significant changes'] },
+    { id: 'glare', text: 'Do you experience glare, halos around lights, or difficulty with night vision?', options: ['Rarely', 'Occasionally', 'Frequently'] },
+    { id: 'familyEye', text: 'Family history of macular degeneration, glaucoma, or cataracts?', options: ['No known history', 'One family member', 'Multiple family members'] },
+    { id: 'drivingVision', text: 'Has your vision affected driving or daily activities?', options: ['Not at all', 'Slightly', 'Yes, significantly'] },
+  ],
+  "Vaccinations (senior)": [
+    { id: 'fluVacc', text: 'Did you receive a flu shot this season?', options: ['Yes', 'Not yet this season', 'I usually skip flu shots'] },
+    { id: 'shingrix', text: 'Have you received the Shingrix (shingles) vaccine (2 doses)?', options: ['Yes, both doses', 'One dose only', 'No', 'Not sure'] },
+    { id: 'pneumococcal', text: 'Have you had a pneumococcal vaccine (PCV15/PCV20)?', options: ['Yes', 'Not sure', 'No'] },
+    { id: 'covid', text: 'Are you up to date with COVID-19 boosters?', options: ['Yes, current booster', 'Behind on boosters', 'Never vaccinated for COVID'] },
+  ],
+  "Hearing test (senior)": [
+    { id: 'lastHearing', text: 'When was your last formal hearing test (audiogram)?', options: ['Within 1 year', '1–2 years ago', '2–5 years ago', 'Never / long ago'] },
+    { id: 'hearingLoss', text: 'Do people often need to repeat themselves for you?', options: ['Rarely / never', 'Occasionally', 'Frequently'] },
+    { id: 'tvVolume', text: 'Do you turn the TV volume higher than others prefer?', options: ['No, normal volume', 'Slightly higher', 'Significantly higher'] },
+    { id: 'tinnitus', text: 'Do you experience ringing or buzzing in your ears (tinnitus)?', options: ['Never', 'Occasionally', 'Frequently'] },
+    { id: 'hearingAid', text: 'Do you currently use or have you been told you need a hearing aid?', options: ['No, hearing is fine', 'Told I might benefit from one', 'I use hearing aids already'] },
+  ],
+
 };
 
-function openQuiz(item) {
+function getQuestionsForCheckup(item) {
+  // Try exact name match first
+  if (QUIZ_QUESTIONS[item.name]) return QUIZ_QUESTIONS[item.name];
+  // Try name with age-group suffix variants (e.g. senior Cardiovascular)
   const age = parseInt(document.getElementById('age-input').value);
   const group = getAgeGroup(age);
-  const questions = QUIZ_QUESTIONS[group];
+  const suffixKey = item.name + (group === 'senior' ? ' (senior)' : group === 'youngAdult' ? ' (young adult)' : '');
+  if (QUIZ_QUESTIONS[suffixKey]) return QUIZ_QUESTIONS[suffixKey];
+  // Generic fallback
+  return [
+    { id: 'lastVisit', text: `When was your last ${item.name.toLowerCase()}?`, options: ['Within 1 year', '1–2 years ago', '2+ years ago', 'Never / unsure'] },
+    { id: 'symptoms', text: 'Do you have any symptoms or concerns related to this?', options: ['None', 'Mild', 'Moderate', 'Significant'] },
+    { id: 'familyHistory', text: 'Any relevant family history?', options: ['No known history', 'One family member', 'Multiple family members'] },
+  ];
+}
+
+function openQuiz(item) {
+  const questions = getQuestionsForCheckup(item);
 
   document.getElementById('quiz-banner-name').textContent = `${item.icon} ${item.name}`;
   document.getElementById('quiz-result').innerHTML = '';
@@ -190,7 +369,7 @@ function closeQuiz() {
 async function submitQuiz() {
   const age = parseInt(document.getElementById('age-input').value);
   const group = getAgeGroup(age);
-  const questions = QUIZ_QUESTIONS[group];
+  const questions = getQuestionsForCheckup(selectedCheckup);
 
   const answers = [];
   let allAnswered = true;
